@@ -25,8 +25,28 @@ Everything mirrors the Windows VM setup:
 
 ## Quick start
 
+One command (downloads the verified Arch ISO, sets up the VM, and starts it):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/azzenabidi/arch-vm/main/install.sh | bash
+```
+
+Open **http://127.0.0.1:8007** in a browser. The Arch live environment is
+waiting at a root shell.
+
+Options:
+
+| Env var          | Default              | Meaning                        |
+| ---------------- | -------------------- | ------------------------------ |
+| `ARCH_VM_DIR`    | `~/arch-vm`          | where the VM is installed      |
+| `ARCH_ISO_URL`   | Arch `latest` ISO URL| install media to download      |
+| `ARCH_NO_START`  | `0`                  | set `1` to download/setup only |
+
+Manual setup, if you'd rather do it step by step:
+
 ```bash
 # 1. Get the official Arch live ISO and verify it
+mkdir -p arch-vm && cd arch-vm
 curl -LO https://geo.mirror.pkgbuild.com/iso/latest/archlinux-x86_64.iso
 curl -fsS https://geo.mirror.pkgbuild.com/iso/latest/sha256sums.txt | grep 'archlinux-x86_64.iso$'
 sha256sum archlinux-x86_64.iso   # compare against the checksum file
@@ -34,9 +54,6 @@ sha256sum archlinux-x86_64.iso   # compare against the checksum file
 # 2. Start the VM
 ./omarchy-arch-vm launch         # or: docker compose up -d
 ```
-
-Open **http://127.0.0.1:8007** in a browser. The Arch live environment is
-waiting at a root shell.
 
 ## Layout
 
