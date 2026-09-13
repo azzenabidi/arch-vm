@@ -1,0 +1,12 @@
+# VM disk images, firmware, and install media are large; never commit them.
+*.iso
+data.img
+disk.img
+uefi.rom
+uefi.vars
+*.mac
+*.qcow2
+
+# Local storage + shared folder directories.
+arch/
+Arch/

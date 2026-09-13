@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# Start/stop/inspect the Arch Linux learning VM (QEMU in Docker).
+#
+# Mirrors the dockurr family pattern used by the Windows VM (QEMU-in-Docker +
+# web viewer), but boots the Arch Linux live ISO so you can do the install
+# by hand. Uses a verified, bind-mounted ISO instead of an in-container
+# download, and gives the empty virtual disk boot priority so your install
+# automatically takes over after the first reboot.
+
+# Where the compose project lives. Override to point at this repo:
+#   OMARCHY_ARCH_COMPOSE=/path/to/arch-vm/docker-compose.yml
+COMPOSE_FILE="${OMARCHY_ARCH_COMPOSE:-$(dirname "$(readlink -f "$0")")/docker-compose.yml}"
+URL=${ARCH_VM_URL:-http://127.0.0.1:8007}
+
+# Docker needs root here (the user is usually not in the docker group and docker
+# is gated behind a polkit prompt). Run directly when the socket works,
+# otherwise elevate through pkexec.
+docker_cmd() {
+  if docker ps >/dev/null 2>&1; then
+    docker "$@"
+  else
+    pkexec /usr/bin/docker "$@"
+  fi
+}
+
+status() {
+  local state
+  state=$(docker_cmd inspect -f '{{.State.Status}}' omarchy-arch 2>/dev/null || echo "not-created")
+  echo "container: $state"
+  if [ "$state" = "running" ]; then
+    echo "web-viewer: $URL"
+    ss -tln 2>/dev/null | grep -q ':8007' && echo "port 8007: listening" || echo "port 8007: not listening yet"
+  fi
+}
+
+case "${1:-launch}" in
+  launch)
+    docker_cmd compose -f "$COMPOSE_FILE" up -d
+    sleep 2
+    xdg-open "$URL" >/dev/null 2>&1 &
+    ;;
+  stop)
+    docker_cmd compose -f "$COMPOSE_FILE" stop
+    ;;
+  restart)
+    docker_cmd compose -f "$COMPOSE_FILE" restart
+    ;;
+  status | info)
+    status
+    ;;
+  *)
+    echo "usage: omarchy-arch-vm [launch|stop|restart|status]"
+    exit 1
+    ;;
+esac
