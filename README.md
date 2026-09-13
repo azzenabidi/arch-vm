@@ -123,6 +123,10 @@ Or directly: `docker compose stop`, `docker compose up -d`.
   script elevates via `pkexec` and a desktop auth prompt appears.
 - If the installer ever fails, check the VM console — the boot order guarantees
   an empty disk always falls through to the ISO.
+- Keyboard not registering? Click once on the VM canvas so noVNC grabs the
+  keyboard. For an extra explicit USB keyboard device, the compose already
+  passes `ARGUMENTS: "-device usb-kbd"` — the guest will expose both it and the
+  PS/2 keyboard.
 - To reset everything: `docker compose down` and delete the `arch/` contents.
 
 ## License

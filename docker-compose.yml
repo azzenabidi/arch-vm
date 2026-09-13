@@ -8,6 +8,7 @@ services:
       CPU_CORES: "${CPU_CORES:-4}"
       DISK_SIZE: "${DISK_SIZE:-64G}"
       TZ: "${TZ:-Africa/Tunis}"
+      ARGUMENTS: "-device usb-kbd"
     devices:
       - /dev/kvm
       - /dev/net/tun
